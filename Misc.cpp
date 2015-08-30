@@ -70,6 +70,16 @@ char aNumeric[17]={"0123456789*U -]["};		// contains numeric paging data format
 
 bool bShown[2]  = { false, false };
 bool bLogged[3] = { false, false, false };
+const char* jsonMessage[] = {
+	"\"Header\":\"",
+	"\"MSG_CAPCODE\":\"",
+	"\"MSG_TIME\":\"",
+	"\"MSG_DATE\":\"",
+	"\"MSG_MODE\":\"",
+	"\"MSG_TYPE\":\"",
+	"\"MSG_BITRATE\":\"",
+	"\"MSG_MESSAGE\":\"",
+	"\"MSG_MOBITEX\":\"" };
 
 char Current_MSG[9][MAX_STR_LEN];			// PH: Buffer for all message items
 											// 1 = MSG_CAPCODE
@@ -2087,7 +2097,9 @@ void CollectLogfileLine(char *string, bool bFilter)
 	int spacing=0;
 
 	szLogFileLine[0] = '\0';
-	
+	//start the Json Object
+	strcat(szLogFileLine, "{");
+
 	for (int col=1; col<8; col++)
 	{
 		if (col == 7)
@@ -2096,7 +2108,7 @@ void CollectLogfileLine(char *string, bool bFilter)
 			spacing = strlen(szLogFileLine);
 			strcat(szLogFileLine, " ");
 		}
-
+		
 		if (strchr(string, '0'+col))
 		{
 			if (col == 7)
@@ -2147,11 +2159,21 @@ void CollectLogfileLine(char *string, bool bFilter)
 						}
 					}
 				}
-				else strcat(szLogFileLine, Current_MSG[MSG_MESSAGE]);
+				else
+				{
+					strcat(szLogFileLine, jsonMessage[col]);
+					strcat(szLogFileLine, Current_MSG[MSG_MESSAGE]);
+					strcat(szLogFileLine, "\"");
+				}
 			}
-			else strcat(szLogFileLine, Current_MSG[col]);
+			else
+			{
+				strcat(szLogFileLine, jsonMessage[col]);
+				strcat(szLogFileLine, Current_MSG[col]);
+				strcat(szLogFileLine, "\"");
+			}
 			
-			if (col < 7) strcat(szLogFileLine, " ");
+			if (col < 7) strcat(szLogFileLine, ",");
 
 			if (col == 1 && Profile.monitor_paging && FLEX_9 > 25)
 			{
@@ -2162,7 +2184,10 @@ void CollectLogfileLine(char *string, bool bFilter)
 			}
 		}
 	}
+	strcat(szLogFileLine, "}");
 }
+
+
 
 void display_color(PaneStruct *pane, BYTE ct)
 {
