@@ -71,7 +71,7 @@ char aNumeric[17]={"0123456789*U -]["};		// contains numeric paging data format
 bool bShown[2]  = { false, false };
 bool bLogged[3] = { false, false, false };
 const char* jsonMessage[] = {
-	"\"Header\":\"",
+	"\"FRAGMENTED\":\"",
 	"\"MSG_CAPCODE\":\"",
 	"\"MSG_TIME\":\"",
 	"\"MSG_DATE\":\"",
@@ -2096,9 +2096,35 @@ void CollectLogfileLine(char *string, bool bFilter)
 	extern int FLEX_9;
 	int spacing=0;
 
+	bool bFragment = false;
+	int nFragment = 0;
+	//In a fragmented message the bitrate field is incremented by one. 
+	//1600 1st fragment
+	//1601 2nd fragment
+	//1602 3rd fragment
+	nFragment = char(Current_MSG[MSG_BITRATE][3]) + 1;
+
+
 	szLogFileLine[0] = '\0';
 	//start the Json Object
 	strcat(szLogFileLine, "{");
+
+	if (strstr(Current_MSG[MSG_MODE], "FLEX") && (Current_MSG[MSG_BITRATE][3] != '0'))
+	{
+		//In a fragmented message the bitrate field is incremented by one. 
+		//1600 1st fragment
+		//1601 2nd fragment
+		//1602 3rd fragment
+		bFragment = true;
+		strcat(szLogFileLine, jsonMessage[0]);
+		char buffer[2];
+		sprintf(buffer, "%c", nFragment);
+		strcat(szLogFileLine, buffer);
+		strcat(szLogFileLine, "\"");
+		
+
+	}
+	
 
 	for (int col=1; col<8; col++)
 	{
