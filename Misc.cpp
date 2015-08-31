@@ -2141,6 +2141,7 @@ void CollectLogfileLine(char *string, bool bFilter)
 			{
 				if (Profile.monitor_acars)
 				{
+					strcat(szLogFileLine, jsonMessage[col]);
 					for (int pos=0; Current_MSG[MSG_MESSAGE][pos]!=0; pos++)
 					{
 						if (Current_MSG[MSG_MESSAGE][pos] == char(23))
@@ -2150,9 +2151,11 @@ void CollectLogfileLine(char *string, bool bFilter)
 						}
 						else strncat(szLogFileLine, (char*)&Current_MSG[MSG_MESSAGE][pos], 1);
 					}
+					strcat(szLogFileLine, "\"");
 				}
 				else if (Profile.monitor_mobitex)
 				{
+					strcat(szLogFileLine, jsonMessage[col]);
 					if (Current_MSG[MSG_MOBITEX][0] && bFilter)
 					{
 						for (int pos=0; Current_MSG[MSG_MOBITEX][pos]!=0; pos++)
@@ -2169,9 +2172,11 @@ void CollectLogfileLine(char *string, bool bFilter)
 					{
 						strcat(szLogFileLine, Current_MSG[MSG_MESSAGE]);
 					}
+					strcat(szLogFileLine, "\"");
 				}
 				else if ((strstr(Current_MSG[MSG_MESSAGE], "»") != 0) && Profile.Linefeed)
 				{
+					strcat(szLogFileLine, jsonMessage[col]);
 					for (int pos=0; Current_MSG[MSG_MESSAGE][pos]!=0; pos++)
 					{
 						if (Current_MSG[MSG_MESSAGE][pos] == '»')
@@ -2184,6 +2189,7 @@ void CollectLogfileLine(char *string, bool bFilter)
 							strncat(szLogFileLine, (char*)&Current_MSG[MSG_MESSAGE][pos], 1);
 						}
 					}
+					strcat(szLogFileLine, "\"");
 				}
 				else
 				{
